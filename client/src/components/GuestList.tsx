@@ -100,6 +100,8 @@ export default function GuestList() {
                 <th className="px-4 py-2 border">Name</th>
                 <th className="px-4 py-2 border">Email</th>
                 <th className="px-4 py-2 border">Phone</th>
+                <th className="px-4 py-2 border">Address</th>
+                <th className="px-4 py-2 border">Date of Birth</th>
                 <th className="px-4 py-2 border">Actions</th>
               </tr>
             </thead>
@@ -112,6 +114,12 @@ export default function GuestList() {
                   </td>
                   <td className="px-4 py-2 border">{guest.email}</td>
                   <td className="px-4 py-2 border">{guest.phone || "-"}</td>
+                  <td className="px-4 py-2 border">{guest.address || "-"}</td>
+                  <td className="px-4 py-2 border">
+                    {guest.date_of_birth
+                      ? new Date(guest.date_of_birth).toLocaleDateString()
+                      : "-"}
+                  </td>
                   <td className="px-4 py-2 border space-x-2">
                     <button
                       onClick={() => openEditModal(guest)}
