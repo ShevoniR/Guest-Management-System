@@ -7,7 +7,7 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   onGuestSaved: (guest: RecordModel) => void;
-  guestToEdit?: RecordModel; // undefined for new guest
+  guestToEdit?: RecordModel;
 };
 
 export default function GuestFormModal({
@@ -19,18 +19,27 @@ export default function GuestFormModal({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (guestToEdit) {
-      setFirstName(guestToEdit.first_name);
-      setLastName(guestToEdit.last_name);
-      setEmail(guestToEdit.email);
+      setFirstName(guestToEdit.first_name || "");
+      setLastName(guestToEdit.last_name || "");
+      setEmail(guestToEdit.email || "");
+      setPhone(guestToEdit.phone || "");
+      setAddress(guestToEdit.address || "");
+      setDateOfBirth(guestToEdit.date_of_birth || "");
     } else {
       setFirstName("");
       setLastName("");
       setEmail("");
+      setPhone("");
+      setAddress("");
+      setDateOfBirth("");
     }
     setError("");
   }, [guestToEdit, isOpen]);
@@ -39,18 +48,12 @@ export default function GuestFormModal({
     e.preventDefault();
     setError("");
 
-    // ✅ Validation
     if (!firstName.trim() || !lastName.trim() || !email.trim()) {
-      setError("All fields are required");
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError("Invalid email address");
+      setError("First, last name, and email are required.");
       return;
     }
 
     setLoading(true);
-
     try {
       let savedGuest: RecordModel;
       if (guestToEdit) {
@@ -58,12 +61,18 @@ export default function GuestFormModal({
           first_name: firstName,
           last_name: lastName,
           email,
+          phone,
+          address,
+          date_of_birth: dateOfBirth,
         });
       } else {
         savedGuest = await pb.collection("guests").create({
           first_name: firstName,
           last_name: lastName,
           email,
+          phone,
+          address,
+          date_of_birth: dateOfBirth,
         });
       }
 
@@ -103,11 +112,8 @@ export default function GuestFormModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900 mb-4"
-                >
+              <Dialog.Panel className="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title className="text-lg font-medium text-gray-900 mb-4">
                   {guestToEdit ? "Edit Guest" : "Add New Guest"}
                 </Dialog.Title>
 
@@ -117,21 +123,41 @@ export default function GuestFormModal({
                     placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="border p-2 rounded w-full"
                   />
                   <input
                     type="text"
                     placeholder="Last Name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="border p-2 rounded w-full"
                   />
                   <input
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="border p-2 rounded w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Phone"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="border p-2 rounded w-full"
+                  />
+                  <input
+                    type="date"
+                    value={dateOfBirth}
+                    onChange={(e) => setDateOfBirth(e.target.value)}
+                    className="border p-2 rounded w-full"
                   />
 
                   {error && <p className="text-red-500">{error}</p>}
